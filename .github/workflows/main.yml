@@ -1,0 +1,34 @@
+name: Build and Test C++ Assignment
+
+on:
+  pull_request:
+    branches:
+      - development
+  push:
+    branches:
+      - development
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Install dependencies
+      run: sudo apt-get install g++ make
+
+    - name: Compile and Test Student Assignments
+      run: |
+        for dir in $(find Assignment/student -type d -name "hw1"); do
+          if [ -f $dir/add_two_numbers.cpp ]; then
+            echo "Testing: $dir/add_two_numbers.cpp"
+            # Compile the student's code and the test file
+            g++ -o test_exec $dir/add_two_numbers.cpp tests/test_add_two_numbers.cpp
+            # Run the tests
+            ./test_exec
+          else
+            echo "No submission found in $dir"
+          fi
+        done
